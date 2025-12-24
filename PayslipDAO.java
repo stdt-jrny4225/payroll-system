@@ -1,52 +1,39 @@
 package payroll;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
+import java.util.*;
 
 public class PayslipDAO {
 
-    public static void showPayslips() {
+    public static List<Object[]> fetchPayslips() {
 
-        try {
-            Connection con = DBConnection.getConnection();
+        List<Object[]> list = new ArrayList<>();
 
-            String sql = """
-                SELECT 
-                    e.id,
-                    e.name,
-                    e.department,
-                    e.basic_salary,
-                    p.gross_salary,
-                    p.deductions,
-                    p.net_salary,
-                    p.pay_date
-                FROM employees e
-                JOIN payroll p
-                ON e.id = p.emp_id
-            """;
+        String sql =
+            "SELECT e.id, e.name, e.department, " +
+            "p.gross_salary, p.deductions, p.net_salary, p.pay_date " +
+            "FROM employees e " +
+            "JOIN payroll p ON e.id = p.emp_id";
 
-            PreparedStatement ps = con.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-
-            System.out.println("\n========== PAYSLIP ==========");
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                System.out.println("Employee ID   : " + rs.getInt("id"));
-                System.out.println("Name          : " + rs.getString("name"));
-                System.out.println("Department    : " + rs.getString("department"));
-                System.out.println("Basic Salary  : " + rs.getDouble("basic_salary"));
-                System.out.println("Gross Salary  : " + rs.getDouble("gross_salary"));
-                System.out.println("Deductions    : " + rs.getDouble("deductions"));
-                System.out.println("Net Salary    : " + rs.getDouble("net_salary"));
-                System.out.println("Pay Date      : " + rs.getDate("pay_date"));
-                System.out.println("----------------------------------");
+                list.add(new Object[]{
+                    rs.getInt(1),
+                    rs.getString(2),
+                    rs.getString(3),
+                    rs.getDouble(4),
+                    rs.getDouble(5),
+                    rs.getDouble(6),
+                    rs.getDate(7)
+                });
             }
-
-            con.close();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return list;
     }
 }

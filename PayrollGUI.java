@@ -21,7 +21,7 @@ public class PayrollGUI {
         JButton payslipBtn = new JButton("View Payslips");
         JButton editBtn = new JButton("Update / Delete");
         JButton pdfBtn = new JButton("Export Payslip PDF");
-
+        JButton payrollBtn = new JButton("Generate Payroll");
 
         frame.add(addBtn);
         frame.add(viewBtn);
@@ -30,6 +30,7 @@ public class PayrollGUI {
         frame.add(editBtn);
         frame.add(exitBtn);
         frame.add(pdfBtn);
+        frame.add(payrollBtn);
         
 
         addBtn.addActionListener(e ->
@@ -44,6 +45,11 @@ public class PayrollGUI {
                 viewFrame.setVisible(true);
             }
         });
+
+        payrollBtn.addActionListener(e -> {
+    PayrollDAO.generatePayrollForAll();
+    JOptionPane.showMessageDialog(frame, "Payroll Generated Successfully");
+    });
 
        payslipBtn.addActionListener(e -> new PayslipFrame());
        

@@ -1,53 +1,44 @@
 package payroll;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.time.LocalDate;
 
 public class PayrollDAO {
 
-    public static void generatePayroll() {
-        try {
-            Connection con = DBConnection.getConnection();
+    public static void generatePayrollForAll() {
 
-            // 🔥 STEP 1: DELETE old payroll (FIX DUPLICATION)
-            String clearSql = "DELETE FROM payroll";
-            PreparedStatement clearPs = con.prepareStatement(clearSql);
-            clearPs.executeUpdate();
+        String selectSQL =
+            "SELECT id, basic_salary FROM employees " +
+            "WHERE id NOT IN (SELECT emp_id FROM payroll)";
 
-            // 🔥 STEP 2: Fetch employees
-            String fetchSql = "SELECT id, basic_salary FROM employees";
-            PreparedStatement fetchPs = con.prepareStatement(fetchSql);
-            ResultSet rs = fetchPs.executeQuery();
+        String insertSQL =
+            "INSERT INTO payroll(emp_id, gross_salary, deductions, net_salary, pay_date) " +
+            "VALUES (?, ?, ?, ?, ?)";
 
-            // 🔥 STEP 3: Insert fresh payroll
-            String insertSql = """
-                INSERT INTO payroll (emp_id, gross_salary, deductions, net_salary, pay_date)
-                VALUES (?,?,?,?,?)
-            """;
-            PreparedStatement insertPs = con.prepareStatement(insertSql);
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement psSelect = con.prepareStatement(selectSQL);
+             PreparedStatement psInsert = con.prepareStatement(insertSQL)) {
+
+            ResultSet rs = psSelect.executeQuery();
 
             while (rs.next()) {
                 int empId = rs.getInt("id");
                 double basic = rs.getDouble("basic_salary");
 
-                double hra = basic * 0.20;
-                double pf  = basic * 0.12;
-                double gross = basic + hra;
-                double net   = gross - pf;
+                double gross = basic * 1.2;
+                double deduction = gross * 0.1;
+                double net = gross - deduction;
 
-                insertPs.setInt(1, empId);
-                insertPs.setDouble(2, gross);
-                insertPs.setDouble(3, pf);
-                insertPs.setDouble(4, net);
-                insertPs.setDate(5, java.sql.Date.valueOf(LocalDate.now()));
+                psInsert.setInt(1, empId);
+                psInsert.setDouble(2, gross);
+                psInsert.setDouble(3, deduction);
+                psInsert.setDouble(4, net);
+                psInsert.setDate(5, Date.valueOf(LocalDate.now()));
 
-                insertPs.executeUpdate();
+                psInsert.executeUpdate();
             }
 
-            con.close();
-            System.out.println("✅ Payroll generated (old data cleared)");
+            System.out.println("✔ Payroll generated for all pending employees");
 
         } catch (Exception e) {
             e.printStackTrace();
