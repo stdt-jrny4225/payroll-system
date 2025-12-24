@@ -1,65 +1,49 @@
-package payroll;
+// package payroll;
 
-import java.util.Scanner;
+// import java.util.Scanner;
 
-class Main {
-    public static void main(String[] args) {
+// public class Main {
 
-        PayrollService service = new PayrollService();
-        Scanner sc = new Scanner(System.in);
+//     public static void main(String[] args) {
 
-        while (true) {
-            System.out.println("\n===== PAYROLL SYSTEM =====");
-            System.out.println("1. Add Permanent Employee");
-            System.out.println("2. Add Contract Employee");
-            System.out.println("3. Show All Employees");
-            System.out.println("4. Exit");
-            System.out.print("Enter choice: ");
+//         Scanner sc = new Scanner(System.in);
 
-            int choice = sc.nextInt();
+//         while (true) {
+//             System.out.println("\n===== PAYROLL SYSTEM =====");
+//             System.out.println("1. Add Employee");
+//             System.out.println("2. View Employees");
+//             System.out.println("3. Generate Payroll");
+//             System.out.println("4. View Payslips");
+//             System.out.println("5. Exit");
+//             System.out.print("Choose option: ");
 
-            if (choice == 1) {
-                System.out.print("Enter ID: ");
-                int id = sc.nextInt();
-                sc.nextLine();
+//             int choice = sc.nextInt();
+//             sc.nextLine(); // clear buffer
 
-                System.out.print("Enter Name: ");
-                String name = sc.nextLine();
+//             switch (choice) {
+//                 case 1:
+//                     EmployeeDAO.addEmployee();
+//                     break;
 
-                System.out.print("Enter Salary: ");
-                double salary = sc.nextDouble();
+//                 case 2:
+//                     EmployeeDAO.fetchEmployees();
+//                     break;
 
-                service.addEmployee(
-                    new PermanentEmployee(id, name, salary)
-                );
+//                 case 3:
+//                     PayrollDAO.generatePayroll();
+//                     break;
 
-            } else if (choice == 2) {
-                System.out.print("Enter ID: ");
-                int id = sc.nextInt();
-                sc.nextLine();
+//                 case 4:
+//                     PayslipDAO.showPayslips();
+//                     break;
 
-                System.out.print("Enter Name: ");
-                String name = sc.nextLine();
+//                 case 5:
+//                     System.out.println("👋 Exiting Payroll System");
+//                     System.exit(0);
 
-                System.out.print("Enter Salary: ");
-                double salary = sc.nextDouble();
-
-                service.addEmployee(
-                    new ContractEmployee(id, name, salary)
-                );
-
-            } else if (choice == 3) {
-                service.showAllEmployees();
-
-            } else if (choice == 4) {
-                System.out.println("👋 Exiting...");
-                break;
-
-            } else {
-                System.out.println("❌ Invalid choice");
-            }
-        }
-
-        sc.close();
-    }
-}
+//                 default:
+//                     System.out.println("❌ Invalid choice");
+//             }
+//         }
+//     }
+// }
