@@ -2,6 +2,7 @@ package payroll;
 
 import java.sql.*;
 import java.util.Vector;
+import javax.swing.table.DefaultTableModel;
 
 public class EmployeeDAO {
 
@@ -75,5 +76,30 @@ public static boolean updateEmployee(int id, String name, String dept, double sa
         return false;
     }
 }
+
+
+
+public static void fetchEmployeesToTable(DefaultTableModel model) {
+    model.setRowCount(0);
+
+    String sql = "SELECT id, name, department, basic_salary FROM employees";
+
+    try (Connection con = DBConnection.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("department"),
+                    rs.getDouble("basic_salary")
+            });
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
 
 }

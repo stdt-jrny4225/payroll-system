@@ -1,90 +1,174 @@
 package payroll;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
-public class PayrollGUI {
+public class PayrollGUI extends JFrame {
 
-    static ViewEmployeesFrame viewFrame;
+    private CardLayout cardLayout;
+    private JPanel mainPanel;
 
-    public static void main(String[] args) {
+    public PayrollGUI() {
+        setTitle("Employee Payroll System");
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-        JFrame frame = new JFrame("Employee Payroll System");
-        frame.setSize(300, 300);
-        frame.setLayout(new GridLayout(3,1,10,10));
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
-
-        JButton addBtn = new JButton("Add Employee");
-        JButton viewBtn = new JButton("View Employees");
-        JButton exitBtn = new JButton("Exit");
-        JButton payslipBtn = new JButton("View Payslips");
-        JButton editBtn = new JButton("Update / Delete");
-        JButton pdfBtn = new JButton("Export Payslip PDF");
-        JButton payrollBtn = new JButton("Generate Payroll");
-
-        frame.add(addBtn);
-        frame.add(viewBtn);
-        frame.add(exitBtn);
-        frame.add(payslipBtn);
-        frame.add(editBtn);
-        frame.add(exitBtn);
-        frame.add(pdfBtn);
-        frame.add(payrollBtn);
-        
-
-        addBtn.addActionListener(e ->
-            new AddEmployeeForm(viewFrame)
-        );
-
-        viewBtn.addActionListener(e -> {
-            if (viewFrame == null) {
-                viewFrame = new ViewEmployeesFrame();
-            } else {
-                viewFrame.loadEmployees();
-                viewFrame.setVisible(true);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                exitApp();
             }
         });
 
-        payrollBtn.addActionListener(e -> {
-    PayrollDAO.generatePayrollForAll();
-    JOptionPane.showMessageDialog(frame, "Payroll Generated Successfully");
-    });
+        setLayout(new BorderLayout());
 
-       payslipBtn.addActionListener(e -> new PayslipFrame());
-       
-        pdfBtn.addActionListener(e -> {
+        add(createSidebar(), BorderLayout.WEST);
+        add(createMainPanel(), BorderLayout.CENTER);
 
-    String input = JOptionPane.showInputDialog(
-            frame,
-            "Enter Employee ID"
-    );
+        setVisible(true);
+    }
 
-    if (input == null || input.isEmpty()) return;
+    // ================= SIDEBAR =================
+    private JPanel createSidebar() {
+        JPanel sidebar = new JPanel();
+        sidebar.setBackground(new Color(33, 37, 41));
+        sidebar.setPreferredSize(new Dimension(240, 0));
+        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
 
-    int empId = Integer.parseInt(input);
+        JLabel title = new JLabel("Razz Payroll");
+        title.setForeground(Color.WHITE);
+        title.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        title.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        title.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-    PayslipPDFExporter.exportPDF(empId);
+        title.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                cardLayout.show(mainPanel, "WELCOME");
+            }
+        });
 
-    JOptionPane.showMessageDialog(
-            frame,
-            "Payslip PDF Generated"
-    );
-});
+        sidebar.add(title);
+        sidebar.add(Box.createVerticalStrut(20));
 
+        sidebar.add(menuButton("Add Employee", () -> new AddEmployeeForm(null)));
+        sidebar.add(menuButton("View Employees", () -> cardLayout.show(mainPanel, "EMPLOYEES")));
+        sidebar.add(menuButton("Generate Payroll", () -> PayrollService.generatePayrollForAll()));
+        sidebar.add(menuButton("View Payslips", () -> cardLayout.show(mainPanel, "PAYSLIPS")));
+        sidebar.add(menuButton("Export Payslip PDF", () ->
+                {
+            String id = JOptionPane.showInputDialog(this,
+                    "Enter Employee ID:");
+            if (id != null) {
+                PayslipPDFExporter.exportPDF(Integer.parseInt(id));
+            }
+        }));
+        sidebar.add(menuButton("Update / Delete", () ->
+                 new UpdateDeleteEmployeeFrame()));
+        sidebar.add(menuButton("Exit", this::exitApp));
 
-editBtn.addActionListener(e -> new UpdateDeleteEmployeeFrame());
+        return sidebar;
+    }
 
-pdfBtn.addActionListener(e -> {
-    int id = Integer.parseInt(
-        JOptionPane.showInputDialog("Enter Employee ID"));
-    PayslipPDFExporter.exportPDF(id);
-    JOptionPane.showMessageDialog(null,"PDF Generated");
-});
+    private JButton menuButton(String text, Runnable action) {
+        JButton btn = new JButton(text);
+        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 55));
+        btn.setFocusPainted(false);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        btn.setBackground(new Color(52, 58, 64));
+        btn.setForeground(Color.WHITE);
+        btn.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
+        btn.setHorizontalAlignment(SwingConstants.LEFT);
 
+        btn.addActionListener(e -> action.run());
+        return btn;
+    }
 
-        exitBtn.addActionListener(e -> System.exit(0));
+    // ================= MAIN PANEL =================
+    private JPanel createMainPanel() {
+        cardLayout = new CardLayout();
+        mainPanel = new JPanel(cardLayout);
 
-        frame.setVisible(true);
+        mainPanel.add(createWelcomePanel(), "WELCOME");
+        mainPanel.add(createEmployeesPanel(), "EMPLOYEES");
+        mainPanel.add(createPayslipPanel(), "PAYSLIPS");
+
+        cardLayout.show(mainPanel, "WELCOME");
+        return mainPanel;
+    }
+
+    // ================= WELCOME =================
+    private JPanel createWelcomePanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        JLabel label = new JLabel(
+                "<html><center>" +
+                "<h1>Welcome to Employee Payroll System</h1>" +
+                "<p style='font-size:16px'>Manage employees, payroll & payslips easily</p>" +
+                "</center></html>"
+        );
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        panel.add(label);
+        return panel;
+    }
+
+    // ================= EMPLOYEES TABLE =================
+    private JPanel createEmployeesPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+
+        JLabel heading = new JLabel("Employees List");
+        heading.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        heading.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+        String[] cols = {"ID", "Name", "Department", "Salary"};
+        DefaultTableModel model = new DefaultTableModel(cols, 0);
+        JTable table = new JTable(model);
+
+        EmployeeDAO.fetchEmployeesToTable(model);
+
+        panel.add(heading, BorderLayout.NORTH);
+        panel.add(new JScrollPane(table), BorderLayout.CENTER);
+
+        return panel;
+    }
+
+    // ================= PAYSLIPS TABLE =================
+    private JPanel createPayslipPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+
+        JLabel heading = new JLabel("Payroll Payslips");
+        heading.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        heading.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+        String[] cols = {"ID", "Name", "Dept", "Gross", "Deduction", "Net", "Date"};
+        DefaultTableModel model = new DefaultTableModel(cols, 0);
+        JTable table = new JTable(model);
+
+        PayslipDAO.fetchPayslipsToTable(model);
+
+        panel.add(heading, BorderLayout.NORTH);
+        panel.add(new JScrollPane(table), BorderLayout.CENTER);
+
+        return panel;
+    }
+
+    // ================= EXIT =================
+    private void exitApp() {
+        int opt = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to exit?",
+                "Exit Confirmation",
+                JOptionPane.YES_NO_OPTION
+        );
+        if (opt == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
+    }
+
+    // ================= MAIN =================
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(PayrollGUI::new);
     }
 }

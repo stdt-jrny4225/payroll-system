@@ -44,4 +44,30 @@ public class PayrollDAO {
             e.printStackTrace();
         }
     }
+
+    public static void generatePayroll() {
+    String sql = """
+        INSERT INTO payroll (emp_id, gross_salary, deductions, net_salary, pay_date)
+        SELECT 
+            id,
+            basic_salary * 1.2,
+            basic_salary * 0.12,
+            basic_salary * 1.08,
+            CURDATE()
+        FROM employees
+        WHERE id NOT IN (
+            SELECT emp_id FROM payroll WHERE pay_date = CURDATE()
+        )
+    """;
+
+    try (Connection con = DBConnection.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        ps.executeUpdate();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
 }

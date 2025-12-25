@@ -2,6 +2,7 @@ package payroll;
 
 import java.sql.*;
 import java.util.*;
+import javax.swing.table.DefaultTableModel;
 
 public class PayslipDAO {
 
@@ -36,4 +37,72 @@ public class PayslipDAO {
         }
         return list;
     }
+
+  
+
+// public static void fetchPayslipsToTable(DefaultTableModel model) {
+//     model.setRowCount(0);
+
+//     String sql = """
+//         SELECT e.id, e.name, e.department,
+//                p.gross_salary, p.deductions, p.net_salary, p.pay_date
+//         FROM payroll p
+//         JOIN employees e ON p.emp_id = e.id
+//         ORDER BY p.pay_date DESC
+//     """;
+
+//     try (Connection con = DBConnection.getConnection();
+//          PreparedStatement ps = con.prepareStatement(sql);
+//          ResultSet rs = ps.executeQuery()) {
+
+//         while (rs.next()) {
+//             model.addRow(new Object[]{
+//                     rs.getInt("id"),
+//                     rs.getString("name"),
+//                     rs.getString("department"),
+//                     rs.getDouble("gross_salary"),
+//                     rs.getDouble("deductions"),
+//                     rs.getDouble("net_salary"),
+//                     rs.getDate("pay_date")
+//             });
+//         }
+//     } catch (Exception e) {
+//         e.printStackTrace();
+//     }
+// }
+
+
+
+public static void fetchPayslipsToTable(DefaultTableModel model) {
+    model.setRowCount(0);
+
+    String sql = """
+        SELECT e.id, e.name, e.department,
+               p.gross_salary, p.deductions, p.net_salary, p.pay_date
+        FROM payroll p
+        JOIN employees e ON p.emp_id = e.id
+        ORDER BY p.pay_date DESC
+    """;
+
+    try (Connection con = DBConnection.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("department"),
+                    rs.getDouble("gross_salary"),
+                    rs.getDouble("deductions"),
+                    rs.getDouble("net_salary"),
+                    rs.getDate("pay_date")
+            });
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+
 }
