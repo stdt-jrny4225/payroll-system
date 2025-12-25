@@ -1,93 +1,103 @@
 # Employee Payroll Management System (Java)
 
-## 📌 Project Overview
-The Employee Payroll Management System is a console-based Java application designed to manage employee records and automate salary calculations using Object-Oriented Programming (OOP) principles.
-
-This project demonstrates core Java concepts such as Encapsulation, Abstraction, Inheritance, Polymorphism, Collections, and File Handling.
+A desktop-based **Employee Payroll Management System** built using **Core Java, Swing, JDBC, and MariaDB**.  
+This project demonstrates real-world application of **OOP concepts**, **database integration**, and a **dashboard-style GUI**.
 
 ---
 
 ## 🚀 Features
-- Add Permanent and Contract Employees
-- Calculate Net Salary using Polymorphism
-- Store employee records persistently using File Handling
-- Display all employee details
-- Menu-driven console interface
-- Clean and scalable OOP architecture
+
+- 📋 Employee Management (Add, View, Update, Delete)
+- 💰 Payroll Generation
+- 🧾 Payslip Management
+- 📄 Payslip PDF Export (iText)
+- 🖥️ Dashboard UI with Sidebar Navigation
+- 🗄️ MariaDB Database Integration
+- 🔄 Real-time UI refresh after database operations
+- ⚠️ Confirmation dialogs for critical actions
 
 ---
 
-## 🧠 OOP Concepts Used
-- **Encapsulation** – Employee data is protected using access modifiers
-- **Abstraction** – Payroll rules are defined using abstract classes
-- **Inheritance** – Permanent and Contract employees extend a base employee class
-- **Polymorphism** – Salary calculation logic is decided at runtime
-- **Collections** – ArrayList is used to store employee records
-- **File Handling** – Employee data is saved and loaded from a file
+## 🧠 Concepts Used
+
+- Object-Oriented Programming (OOP)
+  - Encapsulation
+  - Inheritance
+  - Polymorphism
+  - Abstraction
+- Java Swing (GUI)
+- JDBC (Database Connectivity)
+- DAO Design Pattern
+- Service Layer Architecture
+- CardLayout (Dashboard UI)
+- PDF Generation using iText
 
 ---
 
-## 🛠️ Technologies Used
-- Java (JDK 17+)
-- VS Code / IntelliJ / Eclipse
-- File Handling (No Database – Internship-level project)
+## 🛠️ Technologies
+
+- **Language:** Java  
+- **GUI:** Java Swing  
+- **Database:** MariaDB  
+- **Connectivity:** JDBC  
+- **PDF Library:** iText  
+- **IDE:** VS Code  
+- **OS:** Windows  
 
 ---
 
-## 📂 Project Structure
+## 🗂️ Project Structure
+
 payroll/
 
-│
+├── PayrollGUI.java
 
-├── Main.java
+├── EmployeeDAO.java
 
-├── BaseEmployee.java
+├── PayrollDAO.java
 
-├── PermanentEmployee.java
-
-├── ContractEmployee.java
+├── PayslipDAO.java
 
 ├── PayrollService.java
 
-├── FileHandler.java
+├── DBConnection.java
 
-└── employees.txt
+├── PayslipPDFExporter.java
+
+├── AddEmployeeForm.java
+
+├── ViewEmployeesFrame.java
+
+├── PayslipFrame.java
+
+└── UpdateDeleteEmployeeFrame.java
 
 
 ---
 
-## ▶ How to Run the Project
-1. Open terminal in project directory
-2. Compile the project:
+## ▶️ How to Run
+
 ```bash
-javac payroll/*.java
+javac -cp ".;payroll/lib/*" payroll/*.java
+java  -cp ".;payroll/lib/*" payroll.PayrollGUI
 ```
-3. Run the application:
-```bash
-java payroll.Main
-```
-🧪 Sample Operations
 
-Add new employees
+# 📌 Future Enhancements
 
-View all employees
+Login & Role-based Access (Admin / HR)
 
-Calculate salary dynamically
+Monthly Payroll History
 
-Persist data across executions
+Search & Filter Employees
 
-🔮 Future Enhancements
+Charts & Analytics
 
-Replace file handling with database (MySQL)
+JavaFX UI Upgrade
 
-Add GUI using JavaFX or Swing
-
-Implement role-based access control
-
-Generate PDF payslips
-
-👨‍💻 Author
+# 👤 Author
 
 Sanjan Kumar
 
-Java Developer (Internship Project)
+💼 Java Developer (Learning Phase)
+
+🔗 GitHub: https://github.com/stdt-jrny4225/payroll-system
